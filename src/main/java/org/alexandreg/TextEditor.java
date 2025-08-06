@@ -23,7 +23,8 @@ public class TextEditor {
             System.out.println("2 - Undo");
             System.out.println("3 - Redo");
             System.out.println("4 - Show current text");
-            System.out.println("5 - Exit");
+            System.out.println("5 - Remove a task");
+            System.out.println("6 - Exit");
             System.out.print("Choose an option: ");
 
             int option = scanner.nextInt();
@@ -76,6 +77,30 @@ public class TextEditor {
                     break;
 
                 case 5:
+                    if(currentTasks.isEmpty()){
+                        System.out.println("No tasks to remove.");
+                    }else{
+                        System.out.println("Select the task number to remove it: ");
+                        for(int i=0; i< currentTasks.size(); i++){
+                            System.out.println((i+1) + " - " + currentTasks.get(i));
+                        }
+
+                        int taskNumber = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if(taskNumber < 1 || taskNumber  > currentTasks.size()){
+                            System.out.println("Invalid task number.");
+                        }else {
+                            stackUndo.push(new ArrayList<>(currentTasks));//save state for undo
+                            currentTasks.remove(taskNumber - 1);//remove the selected task
+                            stackRedo.clear();//clear redo since I've just made a new change
+                            System.out.println("Task removed successfully!");
+                            printDebug(currentTasks, stackUndo, stackRedo);
+                        }
+                    }
+                    break;
+
+                case 6:
                     // Exit the program
                     System.out.println("Thank you for using me :)");
                     executing = false;
