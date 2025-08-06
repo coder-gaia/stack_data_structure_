@@ -1,5 +1,7 @@
 package org.alexandreg;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -9,10 +11,10 @@ public class TextEditor {
 
         // Using Stack (LIFO) to implement Undo and Redo functionalities.
         // Each stack will store complete "snapshots" of the text state.
-        Stack<String> stackUndo = new Stack<>(); // Stores previous text states (for Undo)
-        Stack<String> stackRedo = new Stack<>(); // Stores undone text states (for Redo)
+        Stack< List<String>> stackUndo = new Stack<>(); // Stores previous text states (for Undo)
+        Stack< List<String>> stackRedo = new Stack<>(); // Stores undone text states (for Redo)
 
-        String currentText = "";    // Holds the current text being edited
+        List<String> currentTasks = new ArrayList<>();    // Holds the current text being edited
         boolean executing = true;   // Controls the main loop
 
         while (executing) {
@@ -30,51 +32,47 @@ public class TextEditor {
             switch (option) {
                 case 1:
                     System.out.println("Insert a new text: ");
-
-                    // Save the current text in Undo stack before making changes.
-                    stackUndo.push(currentText);
-
-                    // Update the current text with the new input.
-                    currentText = scanner.nextLine();
-
-                    // Clear Redo stack because a new edit invalidates the redo history.
-                    stackRedo.clear();
+                    stackUndo.push(new ArrayList<>(currentTasks));//save a copy of the current state
+                    String newTask =  scanner.nextLine();
+                    currentTasks.add(newTask); //add a new task
+                    stackRedo.clear();//clear redo stack
+                    printDebug(currentTasks, stackUndo, stackRedo);
                     break;
 
                 case 2:
                     // Undo: Revert to the previous text state
                     if (!stackUndo.isEmpty()) {
-                        // Save the current text in Redo stack so it can be restored if needed.
-                        stackRedo.push(currentText);
-
-                        // Pop the most recent text state from Undo and set it as current.
-                        currentText = stackUndo.pop();
-
+                        stackRedo.push(new ArrayList<>(currentTasks));//save the current state in redo
+                        currentTasks = new ArrayList<>(stackUndo.pop());//restores previous state
                         System.out.println("Undo finished!");
                     } else {
                         System.out.println("Nothing to be undone.");
                     }
+                    printDebug(currentTasks, stackUndo, stackRedo);
                     break;
 
                 case 3:
                     // Redo: Reapply the last undone change
                     if (!stackRedo.isEmpty()) {
-                        // Save the current text in Undo before redoing,
-                        // so we can "undo" this redo if necessary.
-                        stackUndo.push(currentText);
-
-                        // Pop the most recent state from Redo and restore it.
-                        currentText = stackRedo.pop();
-
+                        stackUndo.push(new ArrayList<>(currentTasks));//save the current state in redo
+                        currentTasks = new ArrayList<>(stackRedo.pop());//restores previous state
                         System.out.println("Redo finished!");
                     } else {
                         System.out.println("Nothing to redo.");
                     }
+                    printDebug(currentTasks, stackUndo, stackRedo);
                     break;
 
                 case 4:
                     // Display the current text content
-                    System.out.println("Current text: " + currentText);
+                    System.out.println("Current text: " );
+                    if(currentTasks.isEmpty()){
+                        System.out.println("(No tasks added yet.)");
+                    }else {
+                        for (int i = 0; i < currentTasks.size(); i++) {
+                            System.out.println((i + 1) + " - " + currentTasks.get(i));
+                        }
+                    }
                     break;
 
                 case 5:
@@ -88,5 +86,11 @@ public class TextEditor {
             }
         }
         scanner.close();
+    }
+
+    private static void printDebug(List<String> currentTasks, Stack<List<String>> stackUndo, Stack<List<String>> stackRedo){
+        System.out.println("\n[DEBUG] Current Text: " + currentTasks);
+        System.out.println("[DEBUG] Undo Stack: " + stackUndo);
+        System.out.println("[DEBUG] Redo Stack: " + stackRedo);
     }
 }
