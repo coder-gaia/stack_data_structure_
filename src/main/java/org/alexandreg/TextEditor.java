@@ -18,9 +18,11 @@ public class TextEditor {
         boolean executing = true;   // Controls the main loop
 
         while (executing) {
+
             System.out.println("\n=== Text Editor ===");
             System.out.println("1 - Insert a new text");
             System.out.println("2 - Undo");
+
             System.out.println("3 - Redo");
             System.out.println("4 - Show current text");
             System.out.println("5 - Remove a task");
@@ -31,6 +33,7 @@ public class TextEditor {
             scanner.nextLine(); // Consume the leftover newline from nextInt()
 
             switch (option) {
+
                 case 1:
                     System.out.println("Insert a new text: ");
                     stackUndo.push(new ArrayList<>(currentTasks));//save a copy of the current state
@@ -118,4 +121,5 @@ public class TextEditor {
         System.out.println("[DEBUG] Undo Stack: " + stackUndo);
         System.out.println("[DEBUG] Redo Stack: " + stackRedo);
     }
+
 }
